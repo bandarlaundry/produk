@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bandar Laundry</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+            --gray: #95a5a6;
+            --yellow: #f1c40f;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            flex-grow: 1;
+        }
+        
+        /* Desktop Navigation */
+        .desktop-nav {
+            display: flex;
+        }
+        
+        .desktop-nav ul {
+            display: flex;
+            list-style: none;
+            gap: 20px;
+            margin-right: 20px;
+        }
+        
+        .desktop-nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            padding: 5px 0;
+            position: relative;
+        }
+        
+        .desktop-nav a:hover {
+            color: var(--yellow);
+        }
+        
+        .desktop-nav a.active {
+            color: var(--yellow);
+        }
+        
+        .desktop-nav a.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: var(--yellow);
+        }
+        
+        /* Cart Toggle */
+        .cart-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            position: relative;
+            margin-left: 20px;
+        }
+        
+        .cart-count {
+            background-color: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            padding: 2px 6px;
+            font-size: 0.8rem;
+            position: absolute;
+            top: -5px;
+            right: -5px;
+        }
+        
+        /* Mobile Menu Toggle */
+        .menu-toggle {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px 10px;
+            display: none;
+        }
+        
+        /* Navigation Menu (Mobile) */
+        .nav-menu {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+            transition: right 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+        }
+        
+        .nav-menu.active {
+            right: 0;
+        }
+        
+        .nav-menu h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .nav-menu ul {
+            list-style: none;
+        }
+        
+        .nav-menu li {
+            margin-bottom: 15px;
+        }
+        
+        .nav-menu a {
+            color: var(--dark);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-menu a:hover {
+            color: var(--secondary);
+        }
+        
+        .close-menu {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+        
+        /* Cart Sidebar */
+        .cart-sidebar {
+            position: fixed;
+            top: 0;
+            left: -350px;
+            width: 350px;
+            height: 100vh;
+            background-color: white;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            transition: left 0.3s ease;
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .cart-sidebar.active {
+            left: 0;
+        }
+        
+        .cart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--light);
+        }
+        
+        .cart-items {
+            margin-bottom: 20px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        
+        .cart-item {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            margin-right: 15px;
+        }
+        
+        .cart-item-details {
+            flex-grow: 1;
+        }
+        
+        .cart-item-title {
+            font-size: 1rem;
+            margin-bottom: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .cart-item-price {
+            color: var(--secondary);
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+        }
+        
+        .quantity-btn {
+            background-color: var(--light);
+            border: none;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .quantity-input {
+            width: 40px;
+            text-align: center;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 3px;
+        }
+        
+        .remove-item {
+            color: var(--gray);
+            cursor: pointer;
+            margin-left: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .cart-total {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            text-align: right;
+        }
+        
+        .checkout-form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-family: inherit;
+        }
+        
+        .checkout-btn {
+            background-color: var(--secondary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            width: 100%;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .checkout-btn:hover {
+            background-color: #c0392b;
+        }
+        
+        /* Overlay */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .overlay.active {
+            display: block;
+        }
+        
+        /* Main Content */
+        main {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+        
+        .search-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        #search {
+            padding: 12px 15px;
+            width: 100%;
+            max-width: 500px;
+            border-radius: 30px;
+            border: 1px solid #ddd;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        
+        #search:focus {
+            border-color: var(--primary);
+        }
+        
+        .products {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .product {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .product-img-container {
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .product-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+        
+        .product:hover .product-img {
+            transform: scale(1.05);
+        }
+        
+        .product-info {
+            padding: 15px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .product-title {
+            margin: 0 0 10px 0;
+            color: var(--dark);
+            font-size: 1.1rem;
+            font-weight: 600;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            min-height: 3em;
+        }
+        
+        .product-price {
+            font-weight: bold;
+            color: var(--secondary);
+            font-size: 1.1rem;
+            margin: 10px 0;
+        }
+        
+        .product-description {
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+        
+        .add-to-cart {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: auto;
+        }
+        
+        .add-to-cart:hover {
+            background-color: #1a252f;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+            gap: 10px;
+        }
+        
+        .pagination button {
+            padding: 8px 15px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .pagination button:hover:not(:disabled) {
+            background-color: #1a252f;
+        }
+        
+        .pagination button:disabled {
+            background: var(--gray);
+            cursor: not-allowed;
+        }
+        
+        .pagination button.active {
+            background-color: var(--secondary);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding: 20px;
+            color: white;
+            background-color: var(--primary);
+        }
+        
+        .no-results {
+            text-align: center;
+            grid-column: 1 / -1;
+            padding: 50px;
+            color: var(--gray);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 992px) {
+            .products {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .desktop-nav {
+                display: none;
+            }
+            
+            .menu-toggle {
+                display: block;
+            }
+            
+            .logo {
+                text-align: left;
+                margin-left: 10px;
+            }
+            
+            .cart-sidebar {
+                width: 100%;
+                left: -100%;
+            }
+            
+            .cart-sidebar.active {
+                left: 0;
+            }
+            
+            .nav-menu {
+                width: 80%;
+                right: -80%;
+            }
+            
+            .nav-menu.active {
+                right: 0;
+            }
+            
+            .product-img-container {
+                height: 180px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .products {
+                grid-template-columns: 1fr;
+            }
+            
+            .product-img-container {
+                height: 220px;
+            }
+            
+            .header-container {
+                padding: 0 10px;
+            }
+            
+            .logo {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header>
+        <div class="header-container">
+            <button class="cart-toggle" id="cartToggle">
+                <i class="fas fa-shopping-cart"></i>
+                <span class="cart-count" id="cartCount">0</span>
+            </button>
+            
+            <div class="logo">Bandar Laundry</div>
+            
+            <!-- Desktop Navigation -->
+            <nav class="desktop-nav">
+                <ul>
+                    <li><a href="#" class="nav-link active" data-page="home">Produk</a></li>
+                    <li><a href="#" class="nav-link" data-page="guide">Cara Belanja</a></li>
+                    <li><a href="#" class="nav-link" data-page="contact">Kontak</a></li>
+                </ul>
+            </nav>
+            
+            <!-- Mobile Menu Toggle -->
+            <button class="menu-toggle" id="menuToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+    
+    <!-- Mobile Navigation Menu -->
+    <div class="nav-menu" id="navMenu">
+        <span class="close-menu" id="closeMenu">&times;</span>
+        <h3>Menu</h3>
+        <ul>
+            <li><a href="#" class="nav-link active" data-page="home"><i class="fas fa-home"></i> Produk</a></li>
+            <li><a href="#" class="nav-link" data-page="guide"><i class="fas fa-shopping-bag"></i> Cara Belanja</a></li>
+            <li><a href="#" class="nav-link" data-page="contact"><i class="fas fa-phone-alt"></i> Kontak</a></li>
+        </ul>
+    </div>
+    
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Keranjang Belanja</h3>
+            <button id="closeCart">&times;</button>
+        </div>
+        
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be added here dynamically -->
+            <p class="no-results">Keranjang belanja kosong</p>
+        </div>
+        
+        <div class="cart-total">
+            Total: <span id="cartTotal">Rp0</span>
+        </div>
+        
+        <form class="checkout-form" id="checkoutForm">
+            <div class="form-group">
+                <label for="customerName">Nama Lengkap</label>
+                <input type="text" id="customerName" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="customerWhatsApp">Nomor WhatsApp</label>
+                <input type="tel" id="customerWhatsApp" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="customerAddress">Alamat Lengkap</label>
+                <textarea id="customerAddress" rows="3" required></textarea>
+            </div>
+            
+            <button type="submit" class="checkout-btn">
+                <i class="fab fa-whatsapp"></i> Checkout via WhatsApp
+            </button>
+        </form>
+    </div>
+    
+    <!-- Overlay -->
+    <div class="overlay" id="overlay"></div>
+    
+    <!-- Main Content -->
+    <main>
+        <!-- Home Page (Products) -->
+        <div class="page" id="homePage">
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Cari produk...">
+            </div>
+            
+            <div class="products" id="productContainer">
+                <!-- Products will be loaded here by JavaScript -->
+            </div>
+            
+            <div class="pagination" id="pagination">
+                <!-- Pagination buttons will be added here -->
+            </div>
+        </div>
+        
+        <!-- Guide Page -->
+        <div class="page" id="guidePage" style="display: none;">
+            <h2>Cara Belanja</h2>
+            <div style="background: white; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                <h3>Langkah-langkah berbelanja:</h3>
+                <ol style="margin-top: 15px; padding-left: 20px;">
+                    <li style="margin-bottom: 10px;">Pilih produk yang ingin dibeli</li>
+                    <li style="margin-bottom: 10px;">Klik tombol "Tambah ke Keranjang"</li>
+                    <li style="margin-bottom: 10px;">Klik ikon keranjang di pojok kiri atas</li>
+                    <li style="margin-bottom: 10px;">Periksa produk di keranjang belanja</li>
+                    <li style="margin-bottom: 10px;">Isi formulir checkout dengan data lengkap</li>
+                    <li style="margin-bottom: 10px;">Klik "Checkout via WhatsApp"</li>
+                    <li style="margin-bottom: 10px;">Anda akan diarahkan ke WhatsApp untuk konfirmasi pesanan</li>
+                </ol>
+                
+                <h3 style="margin-top: 30px;">Pembayaran:</h3>
+                <p style="margin-top: 10px;">Pembayaran dilakukan via transfer bank setelah konfirmasi melalui WhatsApp.</p>
+                
+                <h3 style="margin-top: 30px;">Pengiriman:</h3>
+                <p style="margin-top: 10px;">Pengiriman dilakukan via JNE/Anteraja/SiCepat. Biaya pengiriman dihitung berdasarkan lokasi.</p>
+            </div>
+        </div>
+        
+        <!-- Contact Page -->
+        <div class="page" id="contactPage" style="display: none;">
+            <h2>Hubungi Kami</h2>
+            <div style="background: white; padding: 20px; border-radius: 10px; margin-top: 20px;">
+                <p style="margin-bottom: 15px;">Untuk pertanyaan atau informasi lebih lanjut, silakan hubungi kami:</p>
+                
+                <div style="margin-bottom: 15px;">
+                    <strong><i class="fas fa-phone-alt"></i> WhatsApp:</strong>
+                    <p style="margin-top: 5px;">
+                        <a href="https://wa.me/6285773009666" style="color: var(--secondary); text-decoration: none;">
+                            0857-7300-9666
+                        </a>
+                    </p>
+                </div>
+                
+                <div style="margin-bottom: 15px;">
+                    <strong><i class="fas fa-clock"></i> Jam Operasional:</strong>
+                    <p style="margin-top: 5px;">Senin-Sabtu, 08:00 - 17:00 WIB</p>
+                </div>
+                
+                <div>
+                    <strong><i class="fas fa-map-marker-alt"></i> Alamat:</strong>
+                    <p style="margin-top: 5px;">Jl. Narogong Raya Pangkalan 8, Cileungsi, Bogor, Jawa Barat</p>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>&copy; <span id="year"></span> Bandar Laundry. All rights reserved.</p>
+    </footer>
+
+    <script>
+       const _0x50677a=_0x13a9;(function(_0xf6114,_0x2e0193){const _0x50c288=_0x13a9,_0x153807=_0xf6114();while(!![]){try{const _0x302477=parseInt(_0x50c288(0x273))/(-0x22a*0xf+-0x1896+0x390d)*(parseInt(_0x50c288(0x262))/(-0x2187+0x2616+-0xe9*0x5))+-parseInt(_0x50c288(0x234))/(-0x295*0xa+0x1*0xac3+-0x2*-0x789)+-parseInt(_0x50c288(0x1c9))/(-0x65d*0x5+0x2329+-0x354)+parseInt(_0x50c288(0x21a))/(0x60b+-0x784+-0x1*-0x17e)*(-parseInt(_0x50c288(0x1a6))/(0x1*-0x217b+-0x22df*0x1+0x4*0x1118))+parseInt(_0x50c288(0x282))/(-0x1db5+0x98+0x1d24)+-parseInt(_0x50c288(0x2a1))/(-0x18be+0x245c+0x2*-0x5cb)+parseInt(_0x50c288(0x251))/(-0x8d7+-0x1*-0x7cc+0x4*0x45);if(_0x302477===_0x2e0193)break;else _0x153807['push'](_0x153807['shift']());}catch(_0x4c57ba){_0x153807['push'](_0x153807['shift']());}}}(_0x4b8a,-0x111a*0x6+0x6*-0x2ea6b+-0xeb829*-0x2));let allProducts=[],cart=[],currentPage=0x26e0+0x8b*-0x1d+-0x1720;const productsPerPage=-0x202f+0x1b2e+0x507,whatsappNumber=_0x50677a(0x1fe)+_0x50677a(0x193),maxVisiblePages=-0x252f+0x1*-0xae5+0x3016,cartToggle=document['getElement'+_0x50677a(0x242)](_0x50677a(0x196)),menuToggle=document[_0x50677a(0x25c)+_0x50677a(0x242)]('menuToggle'),cartSidebar=document[_0x50677a(0x25c)+_0x50677a(0x242)](_0x50677a(0x25f)+'r'),navMenu=document[_0x50677a(0x25c)+_0x50677a(0x242)](_0x50677a(0x1a5)),overlay=document[_0x50677a(0x25c)+_0x50677a(0x242)](_0x50677a(0x1eb)),closeCart=document[_0x50677a(0x25c)+_0x50677a(0x242)](_0x50677a(0x298)),closeMenu=document[_0x50677a(0x25c)+_0x50677a(0x242)](_0x50677a(0x213)),cartCount=document[_0x50677a(0x25c)+_0x50677a(0x242)](_0x50677a(0x1da)),cartItems=document[_0x50677a(0x25c)+_0x50677a(0x242)]('cartItems'),cartTotal=document[_0x50677a(0x25c)+_0x50677a(0x242)](_0x50677a(0x1e3)),checkoutForm=document[_0x50677a(0x25c)+_0x50677a(0x242)](_0x50677a(0x2b4)+'rm'),searchInput=document[_0x50677a(0x25c)+_0x50677a(0x242)](_0x50677a(0x194)),productContainer=document['getElement'+_0x50677a(0x242)](_0x50677a(0x1d3)+_0x50677a(0x1c0)),pagination=document[_0x50677a(0x25c)+_0x50677a(0x242)]('pagination'),homePage=document[_0x50677a(0x25c)+_0x50677a(0x242)]('homePage'),guidePage=document[_0x50677a(0x25c)+'ById'](_0x50677a(0x299)),contactPage=document['getElement'+_0x50677a(0x242)]('contactPag'+'e'),navLinks=document[_0x50677a(0x28d)+_0x50677a(0x1de)](_0x50677a(0x1c4)),desktopNavLinks=document[_0x50677a(0x28d)+_0x50677a(0x1de)](_0x50677a(0x205)+_0x50677a(0x1aa)+'nk');document[_0x50677a(0x236)+'stener']('DOMContent'+'Loaded',function(){const _0x355824=_0x50677a,_0x23b120={'DBPUf':function(_0x3ef44d,_0x3971d4){return _0x3ef44d(_0x3971d4);},'spaCR':function(_0x3e2f88){return _0x3e2f88();},'pXZBF':_0x355824(0x1bb),'ajife':_0x355824(0x28f),'sIThP':function(_0x4505fb,_0x1a133d){return _0x4505fb(_0x1a133d);},'qLAmq':_0x355824(0x29a),'weYTE':function(_0x492c1){return _0x492c1();},'AudBr':_0x355824(0x1bd)};document[_0x355824(0x25c)+_0x355824(0x242)](_0x23b120[_0x355824(0x2b2)])[_0x355824(0x2c1)+'t']=new Date()['getFullYea'+'r'](),_0x23b120[_0x355824(0x2b7)](loadProducts),loadCart(),cartToggle[_0x355824(0x236)+_0x355824(0x224)](_0x23b120[_0x355824(0x266)],toggleCart),menuToggle['addEventLi'+_0x355824(0x224)](_0x23b120['pXZBF'],toggleMenu),closeCart[_0x355824(0x236)+'stener']('click',toggleCart),closeMenu[_0x355824(0x236)+_0x355824(0x224)](_0x23b120['pXZBF'],toggleMenu),overlay[_0x355824(0x236)+_0x355824(0x224)](_0x355824(0x1bb),closeAll),searchInput[_0x355824(0x236)+_0x355824(0x224)](_0x23b120[_0x355824(0x23c)],filterProducts),checkoutForm['addEventLi'+_0x355824(0x224)](_0x355824(0x23d),processCheckout),navLinks['forEach'](_0x2bb5e7=>{const _0x4af78a=_0x355824,_0x56157b={'TFLLk':function(_0x47238f,_0xbafb51){const _0x47e24f=_0x13a9;return _0x23b120[_0x47e24f(0x27a)](_0x47238f,_0xbafb51);},'eLogB':function(_0x42eb23){return _0x23b120['spaCR'](_0x42eb23);},'tbBVq':function(_0x48e010,_0x141dc9){return _0x48e010(_0x141dc9);}};_0x2bb5e7[_0x4af78a(0x236)+_0x4af78a(0x224)](_0x23b120[_0x4af78a(0x266)],function(_0x1e556d){const _0x294660=_0x4af78a;_0x1e556d[_0x294660(0x1f5)+'ault']();const _0x460e98=this[_0x294660(0x24f)+'te'](_0x294660(0x28f));_0x56157b[_0x294660(0x291)](showPage,_0x460e98),_0x56157b[_0x294660(0x2b3)](toggleMenu),_0x56157b[_0x294660(0x1f6)](updateActiveNav,_0x460e98);});}),desktopNavLinks['forEach'](_0x53a497=>{const _0x48f010=_0x355824,_0x36bd04={'pNacc':_0x23b120[_0x48f010(0x1c7)],'SgJJE':function(_0x2fce7f,_0x311f90){return _0x23b120['DBPUf'](_0x2fce7f,_0x311f90);},'zbGdA':function(_0x524f6e,_0x5d473a){const _0x322227=_0x48f010;return _0x23b120[_0x322227(0x201)](_0x524f6e,_0x5d473a);}};_0x53a497[_0x48f010(0x236)+'stener'](_0x23b120['pXZBF'],function(_0xbd8621){const _0x27a9cf=_0x48f010;_0xbd8621['preventDef'+_0x27a9cf(0x1b4)]();const _0x33d733=this[_0x27a9cf(0x24f)+'te'](_0x36bd04['pNacc']);_0x36bd04['SgJJE'](showPage,_0x33d733),_0x36bd04['zbGdA'](updateActiveNav,_0x33d733);});});});function updateActiveNav(_0x38b7ee){const _0x292964=_0x50677a,_0x32950f={'iCzgT':_0x292964(0x26c)};navLinks[_0x292964(0x1bc)](_0x38213c=>_0x38213c[_0x292964(0x26e)][_0x292964(0x2bd)](_0x292964(0x26c))),document['querySelec'+_0x292964(0x1b9)]('.nav-link['+_0x292964(0x219)+'\x22'+_0x38b7ee+'\x22]')[_0x292964(0x26e)]['add'](_0x32950f[_0x292964(0x2bf)]),desktopNavLinks['forEach'](_0x3a592a=>_0x3a592a[_0x292964(0x26e)][_0x292964(0x2bd)](_0x292964(0x26c))),document[_0x292964(0x28d)+'tor']('.desktop-n'+_0x292964(0x1aa)+_0x292964(0x19d)+_0x292964(0x2a8)+_0x38b7ee+'\x22]')[_0x292964(0x26e)][_0x292964(0x1b0)]('active');}function toggleCart(){const _0x131ce5=_0x50677a,_0x39a544={'LXDsW':_0x131ce5(0x26c)};cartSidebar[_0x131ce5(0x26e)][_0x131ce5(0x1a8)](_0x39a544[_0x131ce5(0x1ef)]),overlay[_0x131ce5(0x26e)]['toggle'](_0x131ce5(0x26c)),document[_0x131ce5(0x28e)][_0x131ce5(0x233)][_0x131ce5(0x1cf)]=cartSidebar[_0x131ce5(0x26e)]['contains'](_0x39a544[_0x131ce5(0x1ef)])?_0x131ce5(0x1a7):'auto';}function toggleMenu(){const _0x1c4b25=_0x50677a,_0x4c2a8b={'LXQtc':_0x1c4b25(0x26c),'ODuEt':_0x1c4b25(0x1a7),'wlmEM':_0x1c4b25(0x2c3)};navMenu['classList'][_0x1c4b25(0x1a8)](_0x1c4b25(0x26c)),overlay['classList'][_0x1c4b25(0x1a8)](_0x4c2a8b[_0x1c4b25(0x26b)]),document['body'][_0x1c4b25(0x233)][_0x1c4b25(0x1cf)]=navMenu[_0x1c4b25(0x26e)][_0x1c4b25(0x2b0)](_0x4c2a8b[_0x1c4b25(0x26b)])?_0x4c2a8b[_0x1c4b25(0x192)]:_0x4c2a8b[_0x1c4b25(0x2a7)];}function closeAll(){const _0x453771=_0x50677a,_0x3a1326={'cMqeR':_0x453771(0x26c),'nZMXz':_0x453771(0x2c3)};cartSidebar['classList'][_0x453771(0x2bd)](_0x3a1326['cMqeR']),navMenu[_0x453771(0x26e)]['remove'](_0x3a1326['cMqeR']),overlay[_0x453771(0x26e)]['remove'](_0x3a1326['cMqeR']),document[_0x453771(0x28e)][_0x453771(0x233)][_0x453771(0x1cf)]=_0x3a1326[_0x453771(0x26f)];}function showPage(_0x40fa40){const _0x58f72b=_0x50677a,_0x3e1340={'eGWkB':'none','RYMuf':function(_0x124e88,_0x520541){return _0x124e88===_0x520541;},'yYYYE':_0x58f72b(0x297),'xXpYi':'guide','axEEj':_0x58f72b(0x210)};homePage[_0x58f72b(0x233)][_0x58f72b(0x271)]=_0x3e1340[_0x58f72b(0x1ad)],guidePage[_0x58f72b(0x233)][_0x58f72b(0x271)]=_0x3e1340[_0x58f72b(0x1ad)],contactPage['style'][_0x58f72b(0x271)]=_0x3e1340[_0x58f72b(0x1ad)];if(_0x3e1340[_0x58f72b(0x225)](_0x40fa40,_0x58f72b(0x279)))homePage[_0x58f72b(0x233)][_0x58f72b(0x271)]=_0x3e1340['yYYYE'];else{if(_0x3e1340['RYMuf'](_0x40fa40,_0x3e1340[_0x58f72b(0x23a)]))guidePage[_0x58f72b(0x233)][_0x58f72b(0x271)]=_0x3e1340[_0x58f72b(0x1a9)];else _0x40fa40===_0x3e1340[_0x58f72b(0x2ac)]&&(contactPage[_0x58f72b(0x233)]['display']=_0x3e1340[_0x58f72b(0x1a9)]);}}function loadProducts(){const _0x5326a0=_0x50677a,_0x209177={'fQKBw':function(_0x54bc48,_0x5289b7){return _0x54bc48(_0x5289b7);},'kdezM':_0x5326a0(0x206)+'ing\x20produc'+_0x5326a0(0x1f7),'CNJiy':'<div\x20class'+_0x5326a0(0x1df)+_0x5326a0(0x1e5)+_0x5326a0(0x2b6)+'duk.\x20Silak'+_0x5326a0(0x280)+'gi\x20nanti.<'+_0x5326a0(0x29b),'HamsN':function(_0x55ed03,_0xcce20f){return _0x55ed03(_0xcce20f);},'MUtDX':'products/p'+_0x5326a0(0x253)};_0x209177['HamsN'](fetch,_0x209177[_0x5326a0(0x2ba)])[_0x5326a0(0x1e9)](_0x20328b=>_0x20328b[_0x5326a0(0x288)]())[_0x5326a0(0x1e9)](_0x483a17=>{allProducts=_0x209177['fQKBw'](parseCSV,_0x483a17),_0x209177['fQKBw'](displayProducts,allProducts),setupPagination(allProducts);})[_0x5326a0(0x19f)](_0x2c7343=>{const _0x4bd1fc=_0x5326a0;console[_0x4bd1fc(0x24e)](_0x209177[_0x4bd1fc(0x24a)],_0x2c7343),productContainer[_0x4bd1fc(0x1ba)]=_0x209177['CNJiy'];});}function parseCSV(_0x2341a3){const _0x4d20cf=_0x50677a,_0x2eef8f=_0x2341a3['split']('\x0a')['filter'](_0x406e84=>_0x406e84[_0x4d20cf(0x22e)]()!==''),_0x437184=_0x2eef8f[0x1315+0x12b1+-0x25c6][_0x4d20cf(0x27b)](',')[_0x4d20cf(0x1c2)](_0x26e3c3=>_0x26e3c3['trim']());return _0x2eef8f['slice'](0x13d9+-0x8b3*-0x1+-0x1c8b)[_0x4d20cf(0x1c2)](_0x4648a8=>{const _0x1ca0a3=_0x4d20cf,_0x428972=_0x4648a8[_0x1ca0a3(0x27b)](/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);return _0x437184['reduce']((_0x1d3965,_0x24b4c0,_0x1ba894)=>{const _0x1bd807=_0x1ca0a3;let _0x59a3cf=_0x428972[_0x1ba894]?_0x428972[_0x1ba894][_0x1bd807(0x22e)]():'';return _0x59a3cf[_0x1bd807(0x199)]('\x22')&&_0x59a3cf[_0x1bd807(0x227)]('\x22')&&(_0x59a3cf=_0x59a3cf[_0x1bd807(0x1b6)](-0xe2c+-0x1*-0xe8a+0x1f*-0x3,-(0x1b6*0xc+0x1d43+0x2*-0x18e5))),_0x1d3965[_0x24b4c0]=_0x59a3cf,_0x1d3965;},{});})[_0x4d20cf(0x276)](_0x4d9270=>_0x4d9270['id']&&_0x4d9270[_0x4d20cf(0x1f2)]);}function formatRupiah(_0x1db5e8){const _0x50d17a=_0x50677a,_0x3ae938={'sKabH':function(_0x1f3288,_0x2defb3){return _0x1f3288(_0x2defb3);},'yfxPI':function(_0x37205b,_0x24d482){return _0x37205b||_0x24d482;},'GVVwn':'id-ID'};return'Rp'+_0x3ae938[_0x50d17a(0x246)](parseInt,_0x3ae938['yfxPI'](_0x1db5e8,0x465+-0x1*0x1683+0x3*0x60a))[_0x50d17a(0x2a2)+'ring'](_0x3ae938[_0x50d17a(0x29c)]);}function displayProducts(_0x5f1737,_0x113572=-0xcf1*0x1+0x39*0x57+-0x66d){const _0x1ff0f9=_0x50677a,_0x4a40da={'URjti':_0x1ff0f9(0x231),'NGDlG':function(_0x34fe17,_0x5a6c0e){return _0x34fe17(_0x5a6c0e);},'hhdCb':_0x1ff0f9(0x1bb),'VzbYS':function(_0x1e18cd,_0x37553e){return _0x1e18cd*_0x37553e;},'kCFvU':function(_0x140b7d,_0x392320){return _0x140b7d-_0x392320;},'lWFDC':function(_0x1bd91e,_0x291a35){return _0x1bd91e+_0x291a35;},'LRpSK':function(_0x2c7894,_0x2b5d47){return _0x2c7894===_0x2b5d47;},'OUsmC':_0x1ff0f9(0x1ed)+_0x1ff0f9(0x1df)+_0x1ff0f9(0x2bc)+'\x20tidak\x20dit'+'emukan</di'+'v>','BXbqF':_0x1ff0f9(0x268)+'rt'};currentPage=_0x113572;const _0x4ab8b8=_0x4a40da['VzbYS'](_0x4a40da['kCFvU'](_0x113572,-0xcdc+0x3f5+0x8e8*0x1),productsPerPage),_0x2a6595=_0x5f1737[_0x1ff0f9(0x1b6)](_0x4ab8b8,_0x4a40da[_0x1ff0f9(0x212)](_0x4ab8b8,productsPerPage));if(_0x4a40da[_0x1ff0f9(0x22a)](_0x2a6595[_0x1ff0f9(0x21c)],-0x1b*0x107+-0x975+0x2e*0xcf)){productContainer[_0x1ff0f9(0x1ba)]=_0x4a40da['OUsmC'];return;}productContainer[_0x1ff0f9(0x1ba)]=_0x2a6595[_0x1ff0f9(0x1c2)](_0x3d3727=>_0x1ff0f9(0x1ab)+_0x1ff0f9(0x285)+_0x1ff0f9(0x21b)+_0x1ff0f9(0x2c0)+_0x1ff0f9(0x293)+_0x1ff0f9(0x1f8)+'div\x20class='+_0x1ff0f9(0x20e)+_0x1ff0f9(0x2b8)+_0x1ff0f9(0x1e6)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x1ff0f9(0x1f8)+_0x1ff0f9(0x1d9)+(_0x3d3727[_0x1ff0f9(0x22d)]||'')+'\x22\x20alt=\x22'+_0x3d3727[_0x1ff0f9(0x1f2)]+(_0x1ff0f9(0x1a1)+_0x1ff0f9(0x230)+_0x1ff0f9(0x2ae)+_0x1ff0f9(0x24c)+_0x1ff0f9(0x293)+_0x1ff0f9(0x293)+_0x1ff0f9(0x1a3)+_0x1ff0f9(0x221)+'src=\x27https'+_0x1ff0f9(0x27d)+'ceholder.c'+'om/300x200'+_0x1ff0f9(0x29f)+_0x1ff0f9(0x1ec)+'ersedia\x27\x22>'+_0x1ff0f9(0x1ab)+_0x1ff0f9(0x293)+_0x1ff0f9(0x217)+_0x1ff0f9(0x293)+'\x20\x20\x20\x20\x20\x20\x20\x20<d'+_0x1ff0f9(0x191)+_0x1ff0f9(0x1d1)+_0x1ff0f9(0x1ac)+_0x1ff0f9(0x293)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20<'+_0x1ff0f9(0x22f)+'product-ti'+'tle\x22>')+(_0x3d3727[_0x1ff0f9(0x1f2)]||_0x1ff0f9(0x259)+_0x1ff0f9(0x1e7))+(_0x1ff0f9(0x1c6)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x1ff0f9(0x293)+'<div\x20class'+_0x1ff0f9(0x289)+_0x1ff0f9(0x1d7))+formatRupiah(_0x3d3727['price'])+(_0x1ff0f9(0x1e8)+_0x1ff0f9(0x293)+_0x1ff0f9(0x293)+_0x1ff0f9(0x256)+_0x1ff0f9(0x209)+_0x1ff0f9(0x1d0)+'\x22>')+(_0x3d3727[_0x1ff0f9(0x1c1)+'n']||_0x1ff0f9(0x1a2)+_0x1ff0f9(0x228)+_0x1ff0f9(0x1b2))+(_0x1ff0f9(0x270)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x1ff0f9(0x1f8)+_0x1ff0f9(0x1ff)+_0x1ff0f9(0x214)+_0x1ff0f9(0x2a6)+_0x1ff0f9(0x2c5))+_0x3d3727['id']+(_0x1ff0f9(0x215)+_0x1ff0f9(0x293)+_0x1ff0f9(0x293)+'\x20<i\x20class='+'\x22fas\x20fa-ca'+_0x1ff0f9(0x25d)+'/i>\x20Tambah'+_0x1ff0f9(0x20b)+_0x1ff0f9(0x1ca)+_0x1ff0f9(0x293)+_0x1ff0f9(0x22c)+_0x1ff0f9(0x267)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+'\x20\x20\x20\x20\x20\x20\x20\x20</'+_0x1ff0f9(0x1f0)+_0x1ff0f9(0x293)+_0x1ff0f9(0x217)+_0x1ff0f9(0x293)))[_0x1ff0f9(0x274)](''),document[_0x1ff0f9(0x28d)+_0x1ff0f9(0x1de)](_0x4a40da[_0x1ff0f9(0x254)])[_0x1ff0f9(0x1bc)](_0x540d10=>{const _0x53edf6=_0x1ff0f9;_0x540d10['addEventLi'+_0x53edf6(0x224)](_0x4a40da[_0x53edf6(0x1cd)],function(){const _0x449e05=_0x53edf6,_0x478f31=this[_0x449e05(0x24f)+'te'](_0x4a40da[_0x449e05(0x202)]);_0x4a40da[_0x449e05(0x257)](addToCart,_0x478f31);});});}function setupPagination(_0x323157){const _0x2571b4=_0x50677a,_0x2a17bb={'mHpEg':function(_0x23815a,_0x27e333){return _0x23815a-_0x27e333;},'CJNtn':function(_0x30f6a6,_0x280a5d){return _0x30f6a6(_0x280a5d);},'HVeav':function(_0x459ac2,_0x219324){return _0x459ac2(_0x219324);},'oXKhU':function(_0x1f3784,_0x56982b){return _0x1f3784+_0x56982b;},'mMlMc':function(_0x25f02f,_0x13fedb){return _0x25f02f/_0x13fedb;},'XoewF':function(_0x1752a4,_0x4a4054){return _0x1752a4<=_0x4a4054;},'HjsIW':_0x2571b4(0x247),'fJotk':_0x2571b4(0x27c)+_0x2571b4(0x2ab),'gRWlM':'click','xsShB':function(_0x2dc315,_0x269074){return _0x2dc315-_0x269074;},'EUTSM':function(_0x3cd6c7,_0x3e8bc5){return _0x3cd6c7>_0x3e8bc5;},'ItMgm':_0x2571b4(0x284),'IywBs':function(_0x15cdbd,_0x1ea517){return _0x15cdbd<=_0x1ea517;},'WPtRU':_0x2571b4(0x26c),'LjiZN':function(_0xcf3b49,_0x3790bc){return _0xcf3b49<_0x3790bc;},'lNoTM':function(_0x57860e,_0x5788cf){return _0x57860e-_0x5788cf;},'RzrVc':'span','tvZOs':_0x2571b4(0x260)+_0x2571b4(0x216)},_0x3fe4e7=Math[_0x2571b4(0x261)](_0x2a17bb[_0x2571b4(0x220)](_0x323157[_0x2571b4(0x21c)],productsPerPage));pagination[_0x2571b4(0x1ba)]='';if(_0x2a17bb['XoewF'](_0x3fe4e7,0x24e3+-0x1*-0x12c9+0x37ab*-0x1))return;const _0x169188=document[_0x2571b4(0x1d4)+'ent'](_0x2a17bb[_0x2571b4(0x19c)]);_0x169188[_0x2571b4(0x1ba)]=_0x2a17bb[_0x2571b4(0x1f1)],_0x169188[_0x2571b4(0x223)]=currentPage===0x128a+-0x1eb5+-0x26*-0x52,_0x169188['addEventLi'+'stener'](_0x2a17bb[_0x2571b4(0x1b8)],()=>{changePage(_0x2a17bb['mHpEg'](currentPage,0x4*-0x254+-0x73e*0x2+0x17cd));}),pagination[_0x2571b4(0x2b5)+'d'](_0x169188);let _0x9f4042,_0x10bb81;if(_0x3fe4e7<=maxVisiblePages)_0x9f4042=-0x1cce+-0x69a+0x2369,_0x10bb81=_0x3fe4e7;else{const _0x2d8e00=Math['floor'](maxVisiblePages/(-0x1*0x1875+0x703*0x3+0x36e));if(currentPage<=_0x2d8e00+(-0x167*0x2+-0x2621*0x1+-0x1478*-0x2))_0x9f4042=0x45f*0x1+0x22d5+-0x2733,_0x10bb81=maxVisiblePages;else currentPage>=_0x2a17bb[_0x2571b4(0x287)](_0x3fe4e7,_0x2d8e00)?(_0x9f4042=_0x3fe4e7-maxVisiblePages+(0x1*-0x5cf+-0x355*0x5+0x1679),_0x10bb81=_0x3fe4e7):(_0x9f4042=_0x2a17bb[_0x2571b4(0x28b)](currentPage,_0x2d8e00),_0x10bb81=_0x2a17bb['oXKhU'](currentPage,_0x2d8e00));}if(_0x9f4042>-0x1*0x97d+0x2662+-0x1ce4){const _0x2de58f=document[_0x2571b4(0x1d4)+_0x2571b4(0x1b1)](_0x2a17bb['HjsIW']);_0x2de58f[_0x2571b4(0x2c1)+'t']=-0x1*0x5+0x1986+0x44*-0x60,_0x2de58f[_0x2571b4(0x236)+'stener'](_0x2571b4(0x1bb),()=>{const _0x5c8d27=_0x2571b4;_0x2a17bb[_0x5c8d27(0x1db)](changePage,-0x191d+0xd56*0x1+0xbc8);}),pagination[_0x2571b4(0x2b5)+'d'](_0x2de58f);if(_0x2a17bb['EUTSM'](_0x9f4042,-0x57b+0x18*-0x80+0x197*0xb)){const _0x4ae17b=document['createElem'+_0x2571b4(0x1b1)]('span');_0x4ae17b['textConten'+'t']=_0x2a17bb['ItMgm'],pagination[_0x2571b4(0x2b5)+'d'](_0x4ae17b);}}for(let _0x33b798=_0x9f4042;_0x2a17bb[_0x2571b4(0x23b)](_0x33b798,_0x10bb81);_0x33b798++){const _0x3e14f1=document[_0x2571b4(0x1d4)+_0x2571b4(0x1b1)](_0x2571b4(0x247));_0x3e14f1['textConten'+'t']=_0x33b798,_0x33b798===currentPage&&_0x3e14f1[_0x2571b4(0x26e)][_0x2571b4(0x1b0)](_0x2a17bb[_0x2571b4(0x1f4)]),_0x3e14f1['addEventLi'+'stener'](_0x2a17bb[_0x2571b4(0x1b8)],()=>{changePage(_0x33b798);}),pagination[_0x2571b4(0x2b5)+'d'](_0x3e14f1);}if(_0x2a17bb[_0x2571b4(0x294)](_0x10bb81,_0x3fe4e7)){if(_0x10bb81<_0x2a17bb[_0x2571b4(0x23e)](_0x3fe4e7,0x2*-0x41b+-0x1*-0x1a0a+-0x75*0x27)){const _0x4b283f=document[_0x2571b4(0x1d4)+_0x2571b4(0x1b1)](_0x2a17bb[_0x2571b4(0x275)]);_0x4b283f['textConten'+'t']=_0x2a17bb[_0x2571b4(0x27e)],pagination[_0x2571b4(0x2b5)+'d'](_0x4b283f);}const _0x1689a4=document[_0x2571b4(0x1d4)+_0x2571b4(0x1b1)](_0x2a17bb[_0x2571b4(0x19c)]);_0x1689a4[_0x2571b4(0x2c1)+'t']=_0x3fe4e7,_0x1689a4[_0x2571b4(0x236)+_0x2571b4(0x224)](_0x2571b4(0x1bb),()=>{const _0x46fb61=_0x2571b4;_0x2a17bb[_0x46fb61(0x1fb)](changePage,_0x3fe4e7);}),pagination[_0x2571b4(0x2b5)+'d'](_0x1689a4);}const _0x31dbe4=document['createElem'+_0x2571b4(0x1b1)](_0x2a17bb[_0x2571b4(0x19c)]);_0x31dbe4[_0x2571b4(0x1ba)]=_0x2a17bb['tvZOs'],_0x31dbe4[_0x2571b4(0x223)]=currentPage===_0x3fe4e7,_0x31dbe4['addEventLi'+_0x2571b4(0x224)](_0x2571b4(0x1bb),()=>{const _0x589eda=_0x2571b4;changePage(_0x2a17bb[_0x589eda(0x20f)](currentPage,-0x5d6+-0x2495*0x1+-0x5*-0x87c));}),pagination[_0x2571b4(0x2b5)+'d'](_0x31dbe4);}function changePage(_0x32fa8e){const _0x23abc3=_0x50677a,_0x473dbf={'nqczw':function(_0x47d6fb){return _0x47d6fb();},'Bfzqh':function(_0x25bf71,_0x14b80a){return _0x25bf71<_0x14b80a;},'pPpms':function(_0x2902ba,_0x6b8f39){return _0x2902ba>_0x6b8f39;},'EWDtQ':function(_0x5d6d8f,_0x23e3b0,_0x26e6f5){return _0x5d6d8f(_0x23e3b0,_0x26e6f5);},'WqtfT':function(_0x199c3e,_0x45087b){return _0x199c3e(_0x45087b);}},_0x2b2349=_0x473dbf[_0x23abc3(0x29d)](filterProducts),_0x114f80=Math[_0x23abc3(0x261)](_0x2b2349[_0x23abc3(0x21c)]/productsPerPage);if(_0x473dbf['Bfzqh'](_0x32fa8e,-0x1*0x2063+0x127d+0x1*0xde7))_0x32fa8e=-0x5*-0x683+-0x2*0x4aa+-0x6*0x3df;if(_0x473dbf[_0x23abc3(0x1bf)](_0x32fa8e,_0x114f80))_0x32fa8e=_0x114f80;_0x473dbf[_0x23abc3(0x195)](displayProducts,_0x2b2349,_0x32fa8e),_0x473dbf[_0x23abc3(0x23f)](setupPagination,_0x2b2349);}function filterProducts(){const _0xc44849=_0x50677a,_0x2deebc={'ihMZk':function(_0x26866e,_0x563daa,_0x44e1d9){return _0x26866e(_0x563daa,_0x44e1d9);},'KbSvt':function(_0xc29138,_0x2cbfc2){return _0xc29138(_0x2cbfc2);}},_0x205cc0=searchInput['value'][_0xc44849(0x272)+'e'](),_0xb40fa7=allProducts[_0xc44849(0x276)](_0x55a700=>_0x55a700['title']&&_0x55a700[_0xc44849(0x1f2)][_0xc44849(0x272)+'e']()[_0xc44849(0x1b3)](_0x205cc0)||_0x55a700[_0xc44849(0x1c1)+'n']&&_0x55a700['descriptio'+'n'][_0xc44849(0x272)+'e']()['includes'](_0x205cc0));return _0x2deebc[_0xc44849(0x19b)](displayProducts,_0xb40fa7,0x26b3*-0x1+0xa96*0x2+-0xbb*-0x18),_0x2deebc['KbSvt'](setupPagination,_0xb40fa7),_0xb40fa7;}function _0x4b8a(){const _0x4da1a7=['ts:','\x20\x20\x20\x20\x20\x20\x20\x20\x20<','nfirmasi\x20k','VkcAZ','HVeav','IMMPf','c=\x22','6285773009','button\x20cla','reduce','sIThP','URjti','\x20kasih.','UDSof','.desktop-n','Error\x20load','n\x20class=\x22r','pBKNu','\x22product-d','getItem','\x20ke\x20Keranj','\x20\x20\x20<img\x20sr','reset','\x22product-i','oXKhU','contact','BAQdk','lWFDC','closeMenu','ss=\x22add-to','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20','a\x20&raquo;','\x20</div>\x0a\x20\x20','-title\x22>','data-page=','25naHYUX','v\x20class=\x22p','length','\x20\x20\x20\x20\x20\x20<spa','setItem','ZDavp','mMlMc','ror=\x22this.','price','disabled','stener','RYMuf','\x22\x20min=\x221\x22>','endsWith','tidak\x20ters','qCBbf','LRpSK','open','\x20\x20\x20\x20\x20\x20\x20\x20</','image','trim','h3\x20class=\x22','roduct-img','data-id','qTZBV','style','3204984iDKMYv','ktGQk','addEventLi','k+Tersedia','cdnFz','\x20pelanggan','xXpYi','IywBs','AudBr','submit','lNoTM','WqtfT','fAikk','g\x20belanja\x20','ById','push','oLOMB','y\x22>\x0a\x20\x20\x20\x20\x20\x20','sKabH','button','Halo,\x20saya','an.\x20Terima','kdezM','customerAd','\x22lazy\x22\x0a\x20\x20\x20','ty-btn\x20inc','error','getAttribu','value','36332892RKCCoh','l\x20pembayar','roduk.csv','BXbqF','placeholde','\x20<p\x20class=','NGDlG','ambar+Tida','Produk\x20Tan','ReUya','m-price\x22>','getElement','rt-plus\x22><','Daftar\x20Pes','cartSideba','Selanjutny','ceil','70084OzpvNK','IYpYm','is.src=\x27ht','esan\x20produ','pXZBF','button>\x0a\x20\x20','.add-to-ca','dress','cuPDt','LXQtc','active','closest','classList','nZMXz','</p>\x0a\x20\x20\x20\x20\x20','display','toLowerCas','17TZWBEN','join','RzrVc','filter','AnMtK','ils\x22>\x0a\x20\x20\x20\x20','home','DBPUf','split','&laquo;\x20Se','://via.pla','ItMgm','nerror=\x22th','an\x20coba\x20la','LfqoH','6113345ZJzuaM','.quantity-','...','\x20\x20\x20\x20\x20\x20\x20<di','\x20\x20<button\x20','xsShB','text','=\x22product-','find','mHpEg','Harap\x20isi\x20','querySelec','body','data-page','decrease\x22>','TFLLk','increase','\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','LjiZN','<p\x20class=\x22','GzJQc','block','closeCart','guidePage','year','/div>','GVVwn','nqczw','customerWh','?text=Gamb','ODDag','9990944Uvrftb','toLocaleSt','Alamat:\x20','ETPdX','parse','-cart\x22\x20dat','wlmEM','ge=\x22','n\x20dan\x20tota','=\x22fas\x20fa-t','belumnya','axEEj','=\x22number\x22\x20','\x22\x20loading=','?text=','contains','Silakan\x20ko','qLAmq','eLogB','checkoutFo','appendChil','memuat\x20pro','weYTE','mg-contain','\x20-\x20','MUtDX','art-item\x22\x20','ts\x22>Produk','remove','\x22\x20alt=\x22','iCzgT','roduct\x22>\x0a\x20','textConten','atsApp','auto','hdIqg','a-id=\x22','lass=\x22cart','quantity','WhatsApp:\x20','vqolk','cart','\x20<div\x20clas','r.com/100x','iv\x20class=\x22','ODuEt','666','search','EWDtQ','cartToggle','\x22\x20class=\x22c','anan:\x0a','startsWith','customerNa','ihMZk','HjsIW','nk[data-pa','</h4>\x0a\x20\x20\x20\x20','catch','etersediaa','\x22\x20class=\x22p','Deskripsi\x20','\x20\x20\x20\x20\x20\x20oner','change','navMenu','1809336DnGmBd','hidden','toggle','yYYYE','av\x20.nav-li','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20','fo\x22>\x0a\x20\x20\x20\x20\x20','eGWkB','\x20\x20\x20\x20<div\x20c','Nama:\x20','add','ent','edia','includes','ault','XBAbc','slice','lKjEZ','gRWlM','tor','innerHTML','click','forEach','input','.cart-item','pPpms','tainer','descriptio','map','max','.nav-link','Rp0','</h3>\x0a\x20\x20\x20\x20','ajife','\x20\x20</div>\x0a\x20','3698116tsRhDr','ang\x0a\x20\x20\x20\x20\x20\x20','k\x20berikut:','ss=\x22quanti','hhdCb','\x0aTotal:\x20','overflow','escription','product-in','semua\x20data','productCon','createElem','<h4\x20class=','rease\x22>+</','price\x22>','\x20ingin\x20mem','img\x20src=\x22','cartCount','CJNtn','\x20\x20\x20\x20\x20\x20\x20\x20\x20o','yQgSy','torAll','=\x22no-resul','mGjSv','NWcKg','.me/','cartTotal','t\x22\x20value=\x22','ts\x22>Gagal\x20','er\x22>\x0a\x20\x20\x20\x20\x20','pa\x20Nama','</div>\x0a\x20\x20\x20','then','data-id=\x22','overlay','ar+Tidak+T','<div\x20class','=\x22cart-ite','LXDsW','div>\x0a\x20\x20\x20\x20\x20','fJotk','title','em-quantit','WPtRU','preventDef','tbBVq'];_0x4b8a=function(){return _0x4da1a7;};return _0x4b8a();}function loadCart(){const _0x12a3df=_0x50677a,_0x693dd9={'GzJQc':function(_0x5bc0ab){return _0x5bc0ab();}},_0x1e3bd1=localStorage[_0x12a3df(0x20a)](_0x12a3df(0x18e));_0x1e3bd1&&(cart=JSON[_0x12a3df(0x2a5)](_0x1e3bd1),_0x693dd9[_0x12a3df(0x296)](updateCartUI));}function saveCart(){const _0x4f7a35=_0x50677a,_0x52207b={'NsNIM':function(_0x14a9cf){return _0x14a9cf();}};localStorage[_0x4f7a35(0x21e)](_0x4f7a35(0x18e),JSON['stringify'](cart)),_0x52207b['NsNIM'](updateCartUI);}function addToCart(_0x16839c){const _0xc3f56e=_0x50677a,_0x323b4e={'UDSof':_0xc3f56e(0x26c),'MnrkD':function(_0x6661bf,_0xb361d2,_0xcb967f){return _0x6661bf(_0xb361d2,_0xcb967f);}},_0xd5aa6f=allProducts[_0xc3f56e(0x28a)](_0x3dc38a=>_0x3dc38a['id']==_0x16839c);if(!_0xd5aa6f)return;const _0x2ec1b1=cart[_0xc3f56e(0x28a)](_0x132503=>_0x132503['id']==_0x16839c);_0x2ec1b1?_0x2ec1b1[_0xc3f56e(0x2c7)]+=0x3d1+0x35*-0x4f+-0xc8b*-0x1:cart[_0xc3f56e(0x243)]({'id':_0xd5aa6f['id'],'title':_0xd5aa6f[_0xc3f56e(0x1f2)],'price':_0xd5aa6f[_0xc3f56e(0x222)],'image':_0xd5aa6f[_0xc3f56e(0x22d)],'quantity':0x1}),saveCart(),cartSidebar['classList'][_0xc3f56e(0x1b0)](_0x323b4e[_0xc3f56e(0x204)]),overlay['classList']['add'](_0x323b4e[_0xc3f56e(0x204)]),_0x323b4e['MnrkD'](setTimeout,()=>{const _0x9982e0=_0xc3f56e;cartSidebar['classList'][_0x9982e0(0x2bd)](_0x323b4e[_0x9982e0(0x204)]),overlay[_0x9982e0(0x26e)][_0x9982e0(0x2bd)](_0x323b4e[_0x9982e0(0x204)]);},0xee*-0x28+0x15e9*-0x1+0x42e9);}function updateCartUI(){const _0x5e06cb=_0x50677a,_0x5be529={'AnMtK':_0x5e06cb(0x283)+_0x5e06cb(0x1bd),'BAQdk':function(_0x4eeb38,_0x4616fe){return _0x4eeb38(_0x4616fe);},'JONWg':_0x5e06cb(0x292),'ItXuP':'decrease','LfqoH':function(_0x360ba2,_0x3d9f9a,_0x2feb99){return _0x360ba2(_0x3d9f9a,_0x2feb99);},'qCBbf':_0x5e06cb(0x1bb),'NARpX':_0x5e06cb(0x1be),'pBKNu':_0x5e06cb(0x231),'mGjSv':function(_0x134993,_0x25930e){return _0x134993(_0x25930e);},'oLOMB':_0x5e06cb(0x295)+'no-results'+'\x22>Keranjan'+_0x5e06cb(0x241)+'kosong</p>','lKjEZ':_0x5e06cb(0x283)+'btn','ktGQk':'.remove-it'+'em'},_0x1981dc=cart[_0x5e06cb(0x200)]((_0x2f28e8,_0x5e6ff8)=>_0x2f28e8+_0x5e6ff8[_0x5e06cb(0x2c7)],0x18d*-0x17+0x22*0x30+-0x1*-0x1d4b);cartCount[_0x5e06cb(0x2c1)+'t']=_0x1981dc;if(cart['length']===0x2027+0x3*0x4d8+-0x2eaf){cartItems[_0x5e06cb(0x1ba)]=_0x5be529[_0x5e06cb(0x244)],cartTotal[_0x5e06cb(0x2c1)+'t']=_0x5e06cb(0x1c5);return;}cartItems[_0x5e06cb(0x1ba)]=cart[_0x5e06cb(0x1c2)](_0x1e8dd5=>_0x5e06cb(0x1ab)+_0x5e06cb(0x285)+'v\x20class=\x22c'+_0x5e06cb(0x2bb)+_0x5e06cb(0x1ea)+_0x1e8dd5['id']+(_0x5e06cb(0x215)+_0x5e06cb(0x293)+_0x5e06cb(0x20c)+_0x5e06cb(0x1fd))+_0x1e8dd5[_0x5e06cb(0x22d)]+_0x5e06cb(0x2be)+_0x1e8dd5['title']+(_0x5e06cb(0x197)+'art-item-i'+'mg\x22\x0a\x20\x20\x20\x20\x20\x20'+_0x5e06cb(0x293)+_0x5e06cb(0x1dc)+_0x5e06cb(0x27f)+_0x5e06cb(0x264)+'tps://via.'+_0x5e06cb(0x255)+_0x5e06cb(0x190)+'100?text=G'+_0x5e06cb(0x258)+_0x5e06cb(0x237)+'\x27\x22>\x0a\x20\x20\x20\x20\x20\x20'+_0x5e06cb(0x293)+_0x5e06cb(0x1ae)+_0x5e06cb(0x2c6)+'-item-deta'+_0x5e06cb(0x278)+_0x5e06cb(0x293)+_0x5e06cb(0x293)+_0x5e06cb(0x1d5)+'\x22cart-item'+_0x5e06cb(0x218))+_0x1e8dd5[_0x5e06cb(0x1f2)]+(_0x5e06cb(0x19e)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x5e06cb(0x293)+_0x5e06cb(0x1ed)+_0x5e06cb(0x1ee)+_0x5e06cb(0x25b))+formatRupiah(_0x1e8dd5['price'])+(_0x5e06cb(0x1e8)+_0x5e06cb(0x293)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x5e06cb(0x18f)+'s=\x22cart-it'+_0x5e06cb(0x1f3)+_0x5e06cb(0x245)+_0x5e06cb(0x293)+_0x5e06cb(0x293)+_0x5e06cb(0x286)+'class=\x22qua'+'ntity-btn\x20'+_0x5e06cb(0x290)+'-</button>'+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x5e06cb(0x293)+_0x5e06cb(0x1f8)+'input\x20type'+_0x5e06cb(0x2ad)+'class=\x22qua'+'ntity-inpu'+_0x5e06cb(0x1e4))+_0x1e8dd5[_0x5e06cb(0x2c7)]+(_0x5e06cb(0x226)+_0x5e06cb(0x1ab)+_0x5e06cb(0x293)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20<'+'button\x20cla'+_0x5e06cb(0x1cc)+_0x5e06cb(0x24d)+_0x5e06cb(0x1d6)+_0x5e06cb(0x267)+_0x5e06cb(0x293)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x5e06cb(0x21d)+_0x5e06cb(0x207)+'emove-item'+'\x22><i\x20class'+_0x5e06cb(0x2aa)+'rash\x22></i>'+'</span>\x0a\x20\x20'+_0x5e06cb(0x293)+_0x5e06cb(0x293)+_0x5e06cb(0x1c8)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+_0x5e06cb(0x1f8)+'/div>\x0a\x20\x20\x20\x20'+_0x5e06cb(0x293)+_0x5e06cb(0x1c8)+'\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20'+'\x20'))['join']('');const _0x5b09d4=cart[_0x5e06cb(0x200)]((_0x17ec9e,_0x3ea933)=>_0x17ec9e+_0x3ea933[_0x5e06cb(0x222)]*_0x3ea933[_0x5e06cb(0x2c7)],0x2*0x7a5+0xae1+-0x1a2b);cartTotal['textConten'+'t']=_0x5be529[_0x5e06cb(0x1e0)](formatRupiah,_0x5b09d4),document[_0x5e06cb(0x28d)+_0x5e06cb(0x1de)](_0x5be529[_0x5e06cb(0x1b7)])[_0x5e06cb(0x1bc)](_0x3481e0=>{const _0x486fb4=_0x5e06cb,_0x38c21e={'VkcAZ':_0x486fb4(0x1be),'fAikk':_0x486fb4(0x231),'ReUya':_0x5be529[_0x486fb4(0x277)],'vqolk':function(_0x421721,_0x482f9a){const _0x2f8d7b=_0x486fb4;return _0x5be529[_0x2f8d7b(0x211)](_0x421721,_0x482f9a);},'IMMPf':_0x5be529['JONWg'],'ODDag':_0x5be529['ItXuP'],'cuPDt':function(_0x5bbad0,_0x3d8760,_0x10ab1e){const _0x415c9b=_0x486fb4;return _0x5be529[_0x415c9b(0x281)](_0x5bbad0,_0x3d8760,_0x10ab1e);}};_0x3481e0[_0x486fb4(0x236)+_0x486fb4(0x224)](_0x5be529['qCBbf'],function(){const _0x1fed96=_0x486fb4,_0x5ca152=this[_0x1fed96(0x26d)](_0x38c21e[_0x1fed96(0x1fa)]),_0x256d10=_0x5ca152[_0x1fed96(0x24f)+'te'](_0x38c21e[_0x1fed96(0x240)]),_0x2ec08=_0x5ca152[_0x1fed96(0x28d)+_0x1fed96(0x1b9)](_0x38c21e[_0x1fed96(0x25a)]);let _0x3f6b27=_0x38c21e[_0x1fed96(0x18d)](parseInt,_0x2ec08[_0x1fed96(0x250)]);if(this[_0x1fed96(0x26e)][_0x1fed96(0x2b0)](_0x38c21e[_0x1fed96(0x1fc)]))_0x3f6b27+=-0x3ef*-0x1+-0xe28*-0x1+-0x1216;else this[_0x1fed96(0x26e)]['contains'](_0x38c21e[_0x1fed96(0x2a0)])&&(_0x3f6b27=Math[_0x1fed96(0x1c3)](-0x42*-0x97+0x17a4+0x119*-0x39,_0x3f6b27-(-0xa85*0x3+0x32e+0x1c62)));_0x2ec08[_0x1fed96(0x250)]=_0x3f6b27,_0x38c21e[_0x1fed96(0x26a)](updateCartItem,_0x256d10,_0x3f6b27);});}),document[_0x5e06cb(0x28d)+_0x5e06cb(0x1de)](_0x5be529[_0x5e06cb(0x235)])['forEach'](_0x528fcb=>{const _0x4acc36=_0x5e06cb;_0x528fcb[_0x4acc36(0x236)+_0x4acc36(0x224)](_0x5be529[_0x4acc36(0x229)],function(){const _0x4ebf67=_0x4acc36,_0x4e3731=this[_0x4ebf67(0x26d)](_0x5be529['NARpX'])[_0x4ebf67(0x24f)+'te'](_0x5be529[_0x4ebf67(0x208)]);_0x5be529[_0x4ebf67(0x1e0)](removeFromCart,_0x4e3731);});}),document[_0x5e06cb(0x28d)+_0x5e06cb(0x1de)](_0x5e06cb(0x283)+_0x5e06cb(0x1bd))[_0x5e06cb(0x1bc)](_0x504e94=>{const _0x11776f=_0x5e06cb,_0x35e3e2={'rYYwS':'.cart-item','ZDavp':_0x5be529[_0x11776f(0x208)],'yQgSy':function(_0x4bf321,_0x373e4e){const _0x3aa649=_0x11776f;return _0x5be529[_0x3aa649(0x211)](_0x4bf321,_0x373e4e);}};_0x504e94[_0x11776f(0x236)+_0x11776f(0x224)](_0x11776f(0x1a4),function(){const _0x1018e4=_0x11776f,_0x3e8f43=this['closest'](_0x35e3e2['rYYwS'])[_0x1018e4(0x24f)+'te'](_0x35e3e2[_0x1018e4(0x21f)]),_0xb9bcac=_0x35e3e2[_0x1018e4(0x1dd)](parseInt,this[_0x1018e4(0x250)])||-0x961*-0x3+-0xbc5+-0x3b*0x47;updateCartItem(_0x3e8f43,_0xb9bcac);});});}function _0x13a9(_0x1a0464,_0x335bb8){const _0x14b189=_0x4b8a();return _0x13a9=function(_0xacc70c,_0xd6b983){_0xacc70c=_0xacc70c-(-0x83*0x49+0x18*-0x115+0x40df*0x1);let _0x1ea35f=_0x14b189[_0xacc70c];return _0x1ea35f;},_0x13a9(_0x1a0464,_0x335bb8);}function updateCartItem(_0x59fbf4,_0x22ee10){const _0x55c1b9=_0x50677a,_0xdd6a0d={'BfCCo':function(_0x16a260){return _0x16a260();}},_0xd42c01=cart[_0x55c1b9(0x28a)](_0x44221f=>_0x44221f['id']==_0x59fbf4);_0xd42c01&&(_0xd42c01['quantity']=_0x22ee10,_0xdd6a0d['BfCCo'](saveCart));}function removeFromCart(_0x3213ba){const _0x3788d8=_0x50677a,_0x3d2f25={'hdIqg':function(_0x5583bb){return _0x5583bb();}};cart=cart[_0x3788d8(0x276)](_0x37c838=>_0x37c838['id']!=_0x3213ba),_0x3d2f25[_0x3788d8(0x2c4)](saveCart);}function processCheckout(_0x4a0e9e){const _0x4c4472=_0x50677a,_0x2d9241={'qTZBV':_0x4c4472(0x19a)+'me','cdnFz':_0x4c4472(0x24b)+_0x4c4472(0x269),'NWcKg':function(_0x1cb9bf,_0x34147d){return _0x1cb9bf||_0x34147d;},'IYpYm':function(_0x21f416,_0xa829d9){return _0x21f416(_0xa829d9);},'CcxAE':function(_0x28e7c8,_0x1392c8){return _0x28e7c8(_0x1392c8);},'ETPdX':'_blank','XBAbc':function(_0x4f253d){return _0x4f253d();}};_0x4a0e9e[_0x4c4472(0x1f5)+'ault']();const _0x5a2b14=document['getElement'+_0x4c4472(0x242)](_0x2d9241[_0x4c4472(0x232)])[_0x4c4472(0x250)],_0x25a25d=document['getElement'+'ById'](_0x4c4472(0x29e)+_0x4c4472(0x2c2))[_0x4c4472(0x250)],_0x3dff9a=document[_0x4c4472(0x25c)+_0x4c4472(0x242)](_0x2d9241[_0x4c4472(0x238)])[_0x4c4472(0x250)];if(_0x2d9241[_0x4c4472(0x1e1)](!_0x5a2b14,!_0x25a25d)||!_0x3dff9a){_0x2d9241[_0x4c4472(0x263)](alert,_0x4c4472(0x28c)+_0x4c4472(0x1d2)+_0x4c4472(0x239)+'!');return;}let _0x1a0657=_0x4c4472(0x248)+_0x4c4472(0x1d8)+_0x4c4472(0x265)+_0x4c4472(0x1cb)+'\x0a\x0a';_0x1a0657+=_0x4c4472(0x1af)+_0x5a2b14+'\x0a',_0x1a0657+=_0x4c4472(0x18c)+_0x25a25d+'\x0a',_0x1a0657+=_0x4c4472(0x2a3)+_0x3dff9a+'\x0a\x0a',_0x1a0657+=_0x4c4472(0x25e)+_0x4c4472(0x198),cart[_0x4c4472(0x1bc)]((_0x3773a1,_0x3d3263)=>{const _0x55bd79=_0x4c4472;_0x1a0657+=_0x3d3263+(-0x1*-0x25a2+0x1096+-0x3637*0x1)+'.\x20'+_0x3773a1[_0x55bd79(0x1f2)]+_0x55bd79(0x2b9)+_0x3773a1[_0x55bd79(0x2c7)]+'\x20x\x20'+formatRupiah(_0x3773a1[_0x55bd79(0x222)])+'\x0a';}),_0x1a0657+=_0x4c4472(0x1ce)+cartTotal[_0x4c4472(0x2c1)+'t']+'\x0a\x0a',_0x1a0657+=_0x4c4472(0x2b1)+_0x4c4472(0x1f9)+_0x4c4472(0x1a0)+_0x4c4472(0x2a9)+_0x4c4472(0x252)+_0x4c4472(0x249)+_0x4c4472(0x203);const _0x5a6393=_0x2d9241['CcxAE'](encodeURIComponent,_0x1a0657);window[_0x4c4472(0x22b)]('https://wa'+_0x4c4472(0x1e2)+whatsappNumber+_0x4c4472(0x2af)+_0x5a6393,_0x2d9241[_0x4c4472(0x2a4)]),cart=[],_0x2d9241['XBAbc'](saveCart),checkoutForm[_0x4c4472(0x20d)](),_0x2d9241[_0x4c4472(0x1b5)](toggleCart);}
+    </script>
+</body>
+</html>
